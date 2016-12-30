@@ -30,7 +30,7 @@
 											</div>
 											<div class="form-group text-center">
 												<input type="checkbox" tabindex="3" class="" name="remember" id="remember">
-												<label for="remember"> Remember Me</label>
+												<label for="remember"> 记住我 </label>
 											</div>
 											<div class="form-group">
 												<div class="row">
@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import $ from 'jquery'
+import $ from 'jquery';
 
 export default {
   name: 'login',
@@ -109,7 +109,6 @@ export default {
 			event.preventDefault();
   	},
   	registerFormLink: function(event) {
-  		console.log(this);
 			$("#register-form").delay(100).fadeIn(100);
 	 		$("#login-form").fadeOut(100);
 			$('#login-form-link').removeClass('active');
@@ -117,19 +116,26 @@ export default {
 			event.preventDefault();
   	},
   	login: function(event) {
+  		var that = this;
   		event.preventDefault();
-  		this.$validator.validateAll().then(success => {
-          if (!success) {
-              // handle error
-              return;
-          }
-          alert('From Submitted!');
+  		that.$validator.validateAll().then(success => {
+				if (!success) {
+					// handle error
+					return;
+				}
+        var uri = that.$core.CONST.URI;
+        that.$http.post(uri + '/login').then(response => {
+        	// do
+
+        }, response => {
+        	// handler error
+        	that.$toastr.error('系统错误');
+        	console.log(response);
+        });
       });
-  		console.log(this.user);
   	},
   	register: function(event) {
   		event.preventDefault();
-  		console.log(this.newUser);
   	}
   }
 }
