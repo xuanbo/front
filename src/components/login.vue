@@ -8,10 +8,10 @@
 							<div class="panel-heading">
 								<div class="row">
 									<div class="col-xs-6">
-										<a href="#" class="active" id="login-form-link" @click="loginFormLink">Login</a>
+										<a href="#" class="active" id="login-form-link" @click="loginFormLink">登录</a>
 									</div>
 									<div class="col-xs-6">
-										<a href="#" id="register-form-link" @click="registerFormLink">Register</a>
+										<a href="#" id="register-form-link" @click="registerFormLink">注册</a>
 									</div>
 								</div>
 								<hr>
@@ -21,17 +21,19 @@
 									<div class="col-lg-12">
 										<form id="login-form" action="" method="post" role="form" style="display: block;">
 											<div class="form-group" :class="{'has-error': errors.has('username')}">
-												<input type="text" name="username" id="username" class="form-control" placeholder="Username" v-model="user.username" v-validate data-vv-rules="required" />
+												<input type="text" name="username" id="username" class="form-control" placeholder="Username" v-model="user.username" v-validate data-vv-rules="required|username" />
 												<span v-show="errors.has('username')" class="help-block">{{ errors.first('username') }}</span>
 											</div>
 											<div class="form-group" :class="{'has-error': errors.has('password')}">
-												<input type="password" name="password" id="password" class="form-control" placeholder="Password" v-model="user.password" v-validate data-vv-rules="required" />
+												<input type="password" name="password" id="password" class="form-control" placeholder="Password" v-model="user.password" v-validate data-vv-rules="required|min:8|max:18" />
 												<span v-show="errors.has('password')" class="help-block">{{ errors.first('password') }}</span>
 											</div>
-											<div class="form-group text-center">
+                      <!--
+                      <div class="form-group text-center">
 												<input type="checkbox" tabindex="3" class="" name="remember" id="remember">
 												<label for="remember"> 记住我 </label>
-											</div>
+											</div> 
+                      -->
 											<div class="form-group">
 												<div class="row">
 													<div class="col-sm-6 col-sm-offset-3">
@@ -83,6 +85,15 @@
 
 <script>
 import $ from 'jquery';
+import { Validator }  from 'vee-validate';
+Validator.extend('username', {
+    messages: {
+      en: field => field + '必须为字母、数字、下划线构成的6-18位字符串',
+    },
+    validate: value => {
+      return /[a-z0-9_]{6,18}/.test(value);
+    }
+});
 
 export default {
   name: 'login',
@@ -99,6 +110,9 @@ export default {
       	newConfirmPassword: ''
       }
     }
+  },
+  mounted: function() {
+    console.log('mo');
   },
   methods: {
   	loginFormLink: function(event) {
@@ -124,9 +138,17 @@ export default {
 					return;
 				}
         var uri = that.$core.CONST.URI;
-        that.$http.post(uri + '/login').then(response => {
-        	// do
-
+        that.$http.post(uri + '/login', that.user).then(response => {
+          console.log(response.data);
+          // do
+          if (response.data.code == 200) {
+            // 存储token
+            that.$core.token.save(response.data.result);
+            that.$toastr.success('认证成功');
+            that.$router.push('/');
+          } else {
+            that.$toastr.error(response.data.message);
+          }
         }, response => {
         	// handler error
         	that.$toastr.error('系统错误');

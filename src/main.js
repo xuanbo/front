@@ -23,9 +23,23 @@ const router = new VueRouter({
   routes
 })
 // 引入vee-validate
-import VeeValidate from 'vee-validate';
+import VeeValidate, { Validator } from 'vee-validate'
+import messages from './assets/vee-validate/zh_CN'
+Validator.updateDictionary({
+    zh_CN: {
+        messages
+    }
+})
+const config = {
+    errorBagName: 'errors', // change if property conflicts.
+    delay: 0,
+    locale: 'zh_CN',
+    messages: null,
+    strict: true
+};
 // 使用vee-validate
-Vue.use(VeeValidate);
+Vue.use(VeeValidate, config)
+
 // 引入core
 import core from './config/core'
 

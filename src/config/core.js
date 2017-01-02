@@ -1,8 +1,8 @@
 var CONST = {
-	ACCESS_TOKEN: "accessToken",
+	ACCESS_TOKEN: "access_token",
 	HOMEPAGE: '/',
 	LOGINPAGE: '/login',
-	URI: "localhost:8080"
+	URI: "http://localhost:8080"
 }
 
 // 访问排除页面
